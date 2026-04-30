@@ -7,9 +7,9 @@
 
 import axios from 'axios';
 
-// Creates a base instance pointing to our Spring Boot local server
+// Uses a relative path. Nginx handles the reverse proxy to the API container.
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api'
+  baseURL: '/api'
 });
 
 // The Interceptor: Runs before every single request leaves the browser

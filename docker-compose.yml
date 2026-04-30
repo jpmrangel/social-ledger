@@ -6,10 +6,39 @@ services:
       POSTGRES_DB: socialledger
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - social-network
+
+  api:
+    build:
+      context: ./api
+    container_name: social-ledger-api
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/socialledger
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - db
+    networks:
+      - social-network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: social-ledger-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - social-network
+
+networks:
+  social-network:
+    driver: bridge
 
 volumes:
   postgres_data:
