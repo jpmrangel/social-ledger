@@ -22,32 +22,34 @@ Located in the `/frontend` directory, the user interface is built with Vite and 
 
 * **State Management:** I used React Hooks (`useState`, `useEffect`, `useCallback`) to manage complex states, such as the Dashboard loading sequence. I encountered race conditions where the Dashboard would try to load data for deleted groups, which I solved by implementing a robust initialization effect that validates group existence before fetching details.
 * **Axios Interceptors:** To handle the multi-user simulation logic, I configured an Axios interceptor that automatically injects the active user's ID into every HTTP request header. This ensures that users only interact with their own secure context.
-* **UI/UX:** The interface uses Tailwind CSS for styling. I implemented specific visual cues, such as color-coding "Real Users" (Registered via email) vs. "Simulated Guests" (Created locally), and disabling the delete button for real users to prevent database inconsistency.
+* **Web Server & Reverse Proxy (Nginx):** The application relies on Nginx to serve the optimized static files. More importantly, Nginx acts as a reverse proxy, intercepting any requests to `/api` and routing them to the backend container. This completely eliminates CORS issues and the need for hardcoded absolute URLs in the frontend code.
 
 ### 3. Database & Orchestration (PostgreSQL & Docker)
-Persistence and data integrity were major requirements for managing financial transactions. I utilized **PostgreSQL** to handle concurrent relationships between Users, Groups, and Expenses safely via `@Transactional` operations.
+To guarantee a consistent environment across any machine and completely remove the hassle of local dependencies (like installing Node, Java, or SQL servers locally), the entire application is containerized using **Docker** and **Docker Compose**.
 
-* **Docker Compose:** To simplify database management and ensure consistent environments, I created a `docker-compose.yml` file. This spins up a PostgreSQL container with persistent volumes, completely removing the need to manually install and configure a local SQL server. This keeps the host operating system clean and isolates the database environment perfectly during development.
+* **Multi-stage Builds:** Both the frontend and backend utilize multi-stage `Dockerfile`s. This means the code is compiled inside the containers (using Maven and Node) but served using highly lightweight runtime images (Alpine JRE and Nginx), drastically reducing the final image size and improving security.
+* **Isolated Network:** The three containers (Frontend, API, and DB) run inside a private internal bridge network (`social-network`). The services communicate using container DNS names instead of `localhost`, ensuring proper network isolation. Only the Nginx port 80 is exposed to the host machine.
+* **Data Persistence:** PostgreSQL handles concurrent relationships and transactional data safely. A dedicated Docker volume (`postgres_data`) is attached to the database container to ensure all financial records persist even if the containers are destroyed.
 
 ## How to Run
 
-1.  Ensure **Docker** and **Docker Compose** are installed.
-2.  Navigate to the project root.
-3.  Run the database:
+1. Ensure **Docker** and **Docker Compose** are installed on your machine.
+2. Navigate to the project root directory.
+3. Build the images and spin up the entire stack in detached mode:
     ```bash
-    docker-compose up -d
+    docker compose up -d --build
     ```
-4.  Start the Backend (API):
+4. Wait a few seconds for the database and API to initialize, then access the application in your browser:
     ```bash
-    cd api
-    ./mvnw spring-boot:run
+    http://localhost
     ```
-5.  Start the Frontend:
-    ```bash
-    cd frontend
-    npm install
-    npm run dev
-    ```
+-  Useful Commands:
+
+   - To view live logs: docker compose logs -f
+
+   - To stop the application: docker compose down
+
+   - To completely wipe the application and database volumes: docker compose down -v
 
 ---
 *Developed by João Paulo Morais Rangel.*
