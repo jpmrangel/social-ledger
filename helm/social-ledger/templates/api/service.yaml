@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "social-ledger.fullname" . }}-api
+  labels:
+    {{- include "social-ledger.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.api.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "social-ledger.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: api

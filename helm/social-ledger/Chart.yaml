@@ -1,0 +1,13 @@
+apiVersion: v2
+name: social-ledger
+description: Helm chart for Social Ledger - aplicação full-stack de divisão de despesas
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - social-ledger
+  - spring-boot
+  - react
+  - postgresql
+maintainers:
+  - name: jpmrangel
