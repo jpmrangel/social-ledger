@@ -1,0 +1,52 @@
+db:
+  image:
+    repository: postgres
+    tag: "15-alpine"
+  name: socialledger
+  user: postgres
+  password: postgres
+  port: 5432
+  storage: 1Gi
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+api:
+  image:
+    repository: jpmrangel/social-ledger-api
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  port: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "512Mi"
+
+frontend:
+  image:
+    repository: jpmrangel/social-ledger-frontend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  port: 80
+  replicas: 1
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
+
+ingress:
+  enabled: true
+  className: nginx
+  host: k8s.local
+  annotations: {}
