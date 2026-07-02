@@ -40,6 +40,8 @@ services:
     build:
       context: ./frontend
     container_name: social-ledger-frontend
+    environment:
+      - API_HOST=api
     ports:
       - "80:80"
     depends_on:

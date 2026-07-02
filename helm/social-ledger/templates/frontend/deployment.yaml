@@ -41,13 +41,8 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+          env:
+            - name: API_HOST
+              value: "{{ include "social-ledger.fullname" . }}-api"
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
-          volumeMounts:
-            - name: nginx-config
-              mountPath: /etc/nginx/conf.d/default.conf
-              subPath: default.conf
-      volumes:
-        - name: nginx-config
-          configMap:
-            name: {{ include "social-ledger.fullname" . }}-frontend-config
