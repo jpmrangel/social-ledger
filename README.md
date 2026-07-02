@@ -33,6 +33,8 @@ To guarantee a consistent environment across any machine and completely remove t
 
 ## How to Run
 
+### Docker Compose
+
 1. Ensure **Docker** and **Docker Compose** are installed on your machine.
 2. Navigate to the project root directory.
 3. Build the images and spin up the entire stack in detached mode:
@@ -43,13 +45,59 @@ To guarantee a consistent environment across any machine and completely remove t
     ```bash
     http://localhost
     ```
--  Useful Commands:
+- Useful Commands:
 
-   - To view live logs: docker compose logs -f
+  - To view live logs: `docker compose logs -f`
+  - To stop the application: `docker compose down`
+  - To completely wipe the application and database volumes: `docker compose down -v`
 
-   - To stop the application: docker compose down
+### Kubernetes (Minikube + Helm)
 
-   - To completely wipe the application and database volumes: docker compose down -v
+**Prerequisites:** Docker, Minikube, Helm, and kubectl installed.
+
+1. Delete any existing cluster and start fresh:
+    ```bash
+    minikube delete
+    minikube start
+    ```
+
+2. Enable the Ingress addon:
+    ```bash
+    minikube addons enable ingress
+    ```
+
+3. Wait for the Ingress controller to be ready:
+    ```bash
+    kubectl get pods -n ingress-nginx -w
+    ```
+
+4. Build, push, and load the application images:
+    ```bash
+    ./build.sh
+    ```
+
+5. Install the Helm chart:
+    ```bash
+    helm upgrade --install social-ledger ./helm/social-ledger
+    ```
+
+6. Wait for all application pods to be ready:
+    ```bash
+    kubectl get pods -w
+    ```
+
+7. Add the local DNS entry (skip if already present):
+    ```bash
+    grep -q "k8s.local" /etc/hosts || echo "$(minikube ip) k8s.local" | sudo tee -a /etc/hosts
+    ```
+
+8. Access the application at `http://k8s.local`
+
+- Useful Commands:
+
+  - To view API logs: `kubectl logs deployment/social-ledger-api`
+  - To uninstall the chart: `helm uninstall social-ledger`
+  - Default guest credentials: `guest@email.com` / `guest1234`
 
 ---
 *Developed by João Paulo Morais Rangel.*
