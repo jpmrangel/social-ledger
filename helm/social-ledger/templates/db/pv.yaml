@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "social-ledger.fullname" . }}-db-pv
+  labels:
+    {{- include "social-ledger.labels" . | nindent 4 }}
+spec:
+  capacity:
+    storage: {{ .Values.db.storage }}
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: {{ .Values.db.persistence.reclaimPolicy }}
+  storageClassName: {{ .Values.db.persistence.storageClass }}
+  hostPath:
+    path: {{ .Values.db.persistence.hostPath }}
