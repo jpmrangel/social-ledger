@@ -53,5 +53,6 @@ frontend:
 ingress:
   enabled: true
   className: nginx
-  host: k8s.local
+  hosts:
+    - k8s.local
   annotations: {}
