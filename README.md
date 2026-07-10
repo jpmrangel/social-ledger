@@ -93,6 +93,13 @@ To guarantee a consistent environment across any machine and completely remove t
 
 8. Access the application at `http://k8s.local`
 
+To expose the application under additional hostnames, override `ingress.hosts` (remember to add each one to `/etc/hosts`):
+
+```bash
+helm upgrade --install social-ledger ./helm/social-ledger \
+  --set 'ingress.hosts={k8s.local,devops.local}'
+```
+
 - Useful Commands:
 
   - To view API logs: `kubectl logs deployment/social-ledger-api`
