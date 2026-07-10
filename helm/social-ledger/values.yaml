@@ -22,6 +22,7 @@ api:
     pullPolicy: IfNotPresent
   port: 8080
   replicas: 1
+  jpaDdlAuto: update
   resources:
     requests:
       cpu: "200m"

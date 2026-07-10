@@ -43,6 +43,9 @@ spec:
             failureThreshold: 3
           env:
             - name: API_HOST
-              value: "{{ include "social-ledger.fullname" . }}-api"
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "social-ledger.fullname" . }}-config
+                  key: API_HOST
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}

@@ -39,7 +39,15 @@ spec:
               protocol: TCP
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://{{ include "social-ledger.fullname" . }}-db:{{ .Values.db.port }}/{{ .Values.db.name }}"
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "social-ledger.fullname" . }}-config
+                  key: SPRING_DATASOURCE_URL
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "social-ledger.fullname" . }}-config
+                  key: SPRING_JPA_HIBERNATE_DDL_AUTO
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -50,8 +58,6 @@ spec:
                 secretKeyRef:
                   name: {{ include "social-ledger.fullname" . }}-db-secret
                   key: postgres-password
-            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-              value: "update"
           livenessProbe:
             tcpSocket:
               port: http
